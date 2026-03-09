@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MockNova - 3D Ultra Premium OS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* === LIGHT THEME (Lavender & Glass) === */
+        :root {
+            --primary: #7E57C2; 
+            --secondary: #9575CD;
+            --accent: #FF4081; 
+            --success: #00BFA5;
+            
+            --bg-gradient: linear-gradient(135deg, #E6E6FA, #F3E5F5, #EDE7F6, #e8eaf6);
+            --card-bg: rgba(255, 255, 255, 0.65);
+            --card-border: rgba(255, 255, 255, 0.8);
+            --card-shadow: 0 8px 32px 0 rgba(126, 87, 194, 0.15);
+            
+            --text-main: #311B92;
+            --text-muted: #5E35B1;
+            --input-bg: rgba(255, 255, 255, 0.9);
+            
+            /* 3D Shadows */
+            --btn-shadow: 0 4px 10px rgba(126, 87, 194, 0.2);
+            --btn-pressed: inset 0 3px 6px rgba(126, 87, 194, 0.2);
+        }
+
+        /* === DARK THEME (3D Neumorphism) === */
+        body.dark-mode {
+            --primary: #B39DDB;
+            --secondary: #D1C4E9;
+            --accent: #FF80AB;
+            --success: #1DE9B6;
+            
+            --bg-gradient: #0f172a; 
+            --card-bg: #0f172a;
+            --card-border: #1e293b;
+            
+            --card-shadow: 8px 8px 16px #060a12, -8px -8px 16px #182442;
+            --btn-shadow: 5px 5px 10px #060a12, -5px -5px 10px #182442;
+            --btn-pressed: inset 5px 5px 10px #060a12, inset -5px -5px 10px #182442;
+            
+            --text-main: #f8f9fa;
+            --text-muted: #94a3b8;
+            --input-bg: #0f172a;
+        }
+
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        body {
+            font-family: 'Kalam', cursive; background: var(--bg-gradient); background-size: 400% 400%; animation: gradientBG 15s ease infinite;
+            color: var(--text-main); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; transition: all 0.4s ease; min-height: 100vh; overflow-x: hidden;
+        }
+
+        .glass-card { 
+            background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); 
+            border: 1px solid var(--card-border); border-radius: 20px; padding: 20px; 
+            box-shadow: var(--card-shadow); display: flex; flex-direction: column; transition: 0.3s;
+        }
+        
+        .header-container { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; margin-bottom: 25px; margin-top: 15px; text-align: center; }
+        .brand-logo { font-size: 3.2rem; font-weight: bold; color: var(--primary); text-shadow: 2px 2px 5px rgba(0,0,0,0.15); margin-bottom: 15px; letter-spacing: 1px; }
+        .nav-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;}
+
+        .btn { 
+            background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); 
+            padding: 10px 20px; border-radius: 12px; cursor: pointer; font-size: 1.1rem; 
+            font-family: 'Kalam', cursive; font-weight: bold; transition: all 0.2s ease; 
+            box-shadow: var(--btn-shadow);
+        }
+        .btn:active { box-shadow: var(--btn-pressed); transform: scale(0.98); }
+        .btn-primary { background: var(--primary); color: white; border: none; }
+
+        .stats-strip { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 25px; width: 100%; max-width: 1300px; }
+        .stat-badge { background: var(--card-bg); padding: 8px 15px; border-radius: 15px; font-size: 1.1rem; font-weight: bold; border: 1px solid var(--card-border); box-shadow: var(--btn-shadow);}
+
+        .progress-container { width: 100%; max-width: 1300px; padding: 20px 25px; text-align: center; margin-bottom: 30px; box-sizing: border-box; }
+        .progress-bar-bg { width: 100%; height: 28px; background: var(--input-bg); border-radius: 15px; overflow: hidden; position: relative; box-shadow: var(--btn-pressed);}
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--success)); width: 0%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .premium-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; width: 100%; max-width: 1300px; margin-bottom: 35px; }
+        .section-heading { font-size: 1.8rem; font-weight: bold; color: var(--primary); width: 100%; max-width: 1300px; margin-bottom: 15px; border-bottom: 2px solid var(--card-border); padding-bottom: 5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);}
+        .tool-title { font-size: 1.3rem; color: var(--primary); font-weight: bold; margin-bottom: 15px; text-align: center; display: flex; justify-content: center; align-items: center; gap: 8px;}
+
+        .timer-display { font-size: 4rem; font-weight: bold; color: var(--accent); text-align: center; margin: 10px 0; font-family: 'Kalam', cursive; line-height: 1; text-shadow: 2px 2px 5px rgba(0,0,0,0.1);}
+        .timer-controls { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+        .preset-btn { background: var(--input-bg); border: none; color: var(--text-muted); padding: 8px 15px; border-radius: 20px; cursor: pointer; transition: 0.3s; font-weight: bold; box-shadow: var(--btn-shadow); font-family: 'Kalam', cursive;}
+        .preset-btn.active { background: var(--primary); color: white; box-shadow: var(--btn-pressed); }
+
+        .audio-selector { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 15px; }
+        .audio-btn { background: var(--input-bg); border: none; padding: 6px 10px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; color: var(--text-main); transition: 0.2s; box-shadow: var(--btn-shadow); font-weight: bold; font-family: 'Kalam', cursive;}
+        .audio-btn.active { background: var(--secondary); color: white; box-shadow: var(--btn-pressed);}
+        .music-player { border-radius: 15px; overflow: hidden; height: 90px; width: 100%; border: none; margin-top: auto; box-shadow: var(--btn-pressed);}
+
+        .water-container { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px;}
+        .water-drop { font-size: 1.8rem; cursor: pointer; transition: 0.3s; filter: grayscale(100%) opacity(0.2); }
+        .water-drop.active { filter: grayscale(0%) opacity(1); transform: scale(1.15) translateY(-3px); text-shadow: 0 5px 10px rgba(52, 152, 219, 0.5); }
+        
+        .alarm-inputs { display: flex; gap: 8px; margin-bottom: 15px; }
+        .alarm-inputs input { flex-grow: 1; padding: 10px; border-radius: 10px; border: none; background: var(--input-bg); color: var(--text-main); outline: none; font-family: 'Kalam'; width: 100%; box-shadow: var(--btn-pressed);}
+        .alarm-item { display: flex; justify-content: space-between; align-items: center; background: var(--input-bg); padding: 10px 15px; border-radius: 10px; margin-bottom: 8px; box-shadow: var(--btn-shadow); font-size: 1.1rem;}
+
+        .countdown-text { font-size: 3.5rem; font-weight: bold; color: var(--accent); text-align: center; font-family: 'Kalam', cursive; text-shadow: 2px 2px 5px rgba(0,0,0,0.1); line-height: 1;}
+        .countdown-label { font-size: 1.1rem; color: var(--text-muted); text-align: center; margin-top: 5px; font-weight: bold;}
+        
+        /* NEW: Math Booster UI */
+        .math-box { background: var(--input-bg); padding: 15px; border-radius: 12px; box-shadow: var(--btn-pressed); text-align: center; min-height: 100px; display: flex; flex-direction: column; justify-content: center;}
+        .math-q { font-size: 2.2rem; font-weight: bold; color: var(--primary); font-family: 'Kalam', cursive; }
+        .math-a { font-size: 1.8rem; font-weight: bold; color: var(--success); margin-top: 5px; font-family: 'Kalam', cursive; display: none; text-shadow: 1px 1px 3px rgba(0,0,0,0.1);}
+
+        /* Vocab UI */
+        .vocab-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .vocab-nav-btn { background: var(--input-bg); border: none; padding: 5px 12px; border-radius: 8px; font-family: 'Kalam'; font-weight: bold; cursor: pointer; box-shadow: var(--btn-shadow); color: var(--primary);}
+        .vocab-nav-btn:active { box-shadow: var(--btn-pressed); }
+        .vocab-nav-btn.btn-disabled { opacity: 0.4; cursor: not-allowed; }
+        .vocab-counter { font-size: 1rem; font-weight: bold; color: var(--text-muted); }
+        
+        .vocab-box { background: var(--input-bg); padding: 15px; border-radius: 12px; box-shadow: var(--btn-pressed); text-align: center; transition: 0.3s; min-height: 140px;}
+        .vocab-word { font-size: 1.6rem; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
+        .vocab-meaning { font-size: 1.1rem; color: var(--text-main); margin-bottom: 10px; }
+        .vocab-trick { background: rgba(126, 87, 194, 0.1); color: var(--text-muted); padding: 8px; border-radius: 8px; font-size: 1rem; border: 1px dashed var(--primary);}
+        .vocab-timer { text-align: center; font-size: 1.1rem; color: var(--accent); font-weight: bold; margin-top: 10px; font-family: 'Kalam', cursive;}
+
+        .resource-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .resource-link { background: var(--input-bg); padding: 12px; border-radius: 12px; text-align: center; text-decoration: none; color: var(--text-main); font-weight: bold; box-shadow: var(--btn-shadow); transition: 0.2s; font-size: 0.95rem;}
+        .resource-link:hover { box-shadow: var(--btn-pressed); color: var(--primary); transform: scale(0.98);}
+
+        /* Tasks UI */
+        .subject-card { background: transparent; }
+        .task-item { display: flex; align-items: flex-start; margin-bottom: 10px; font-size: 1.1rem; background: var(--input-bg); padding: 10px; border-radius: 12px; transition: 0.2s; box-shadow: var(--btn-shadow);}
+        .task-item.checked { box-shadow: var(--btn-pressed); opacity: 0.7; }
+        .task-item input[type="checkbox"] { width: 20px; height: 20px; margin-right: 10px; cursor: pointer; accent-color: var(--success); margin-top: 2px;}
+        .task-text { flex-grow: 1; outline: none; line-height: 1.3; padding: 2px;}
+        .task-item.checked .task-text { text-decoration: line-through; color: var(--text-muted); }
+        .delete-btn { color: var(--accent); cursor: pointer; background: none; border: none; font-size: 1.2rem; opacity: 0.5; margin-left: 5px; transition: 0.2s;}
+        
+        .notes-card { width: 100%; max-width: 1300px; min-height: 200px; margin-bottom: 30px;}
+        .notes-area { width: 100%; height: 100%; min-height: 150px; border: none; background: transparent; color: var(--text-main); font-family: 'Kalam', cursive; font-size: 1.2rem; resize: vertical; outline: none; }
+
+        /* === BULLETPROOF ZEN MODE FOR APP WEBVIEWS === */
+        .exit-zen-btn { display: none; position: fixed; top: 20px; right: 20px; z-index: 100000; background: var(--accent); color: white; border: none; padding: 12px 25px; border-radius: 25px; font-size: 1.2rem; cursor: pointer; font-family: 'Kalam'; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: 0.3s;}
+        
+        body.zen-active .header-container,
+        body.zen-active .stats-strip,
+        body.zen-active .progress-container,
+        body.zen-active .section-heading,
+        body.zen-active .notes-card,
+        body.zen-active button[onclick="resetDay()"],
+        body.zen-active .glass-card:not(.timer-card) {
+            display: none !important;
+        }
+
+        body.zen-active .premium-grid {
+            display: block;
+            margin: 0; padding: 0;
+        }
+
+        body.zen-active .timer-card {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) scale(1.1) !important;
+            z-index: 99999 !important;
+            width: 90% !important;
+            max-width: 350px !important;
+            margin: 0 !important;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5) !important;
+        }
+
+        body.zen-active .exit-zen-btn { display: block; }
+    </style>
+</head>
+<body>
+
+    <button class="exit-zen-btn" onclick="toggleZenMode()">❌ Exit Zen Mode</button>
+
+    <div class="header-container">
+        <div class="brand-logo">MockNova 📖</div>
+        <div class="nav-actions">
+            <button class="btn" onclick="toggleTheme()" id="themeBtn">🌙 3D Dark Mode</button>
+            <button class="btn" onclick="toggleZenMode()" style="color: var(--primary);">🎯 Deep Focus</button>
+        </div>
+    </div>
+
+    <div class="stats-strip">
+        <div class="stat-badge" style="color: var(--primary);" id="currentDate">📅 Date</div>
+        <div class="stat-badge" style="color: var(--accent);" id="streakDisplay">🔥 Streak: 0</div>
+        <div class="stat-badge" style="color: #F57C00;" id="levelDisplay">⭐ XP: 0</div>
+    </div>
+
+    <div class="glass-card progress-container">
+        <div class="tool-title" style="margin-bottom: 10px;">📈 Daily Mission Progress</div>
+        <div class="progress-bar-bg"><div class="progress-fill" id="progressFill"></div></div>
+        <div style="font-size: 1.2rem; margin-top: 15px; font-weight: bold; color: var(--text-main);" id="progressText">0% Completed (0/0)</div>
+    </div>
+
+    <div class="section-heading">🛠️ Aspirant Essentials</div>
+    <div class="premium-grid">
+        
+        <div class="glass-card">
+            <div class="tool-title">⏳ Target: 7th May 2026</div>
+            <div class="countdown-text" id="examCountdown">00</div>
+            <div class="countdown-label">Days Left for SSC CGL</div>
+            <div style="margin-top:auto; text-align:center; font-size:0.9rem; color:var(--text-muted);">Stay Focused. Every day counts.</div>
+        </div>
+
+        <div class="glass-card">
+            <div class="tool-title">⚡ Neural Math Booster</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); text-align: center; margin-bottom: 10px;">Train your brain for SSC calculation speed</div>
+            
+            <div class="math-box">
+                <div id="mathQuestion" class="math-q">Press Next to Start</div>
+                <div id="mathAnswer" class="math-a"></div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn btn-primary" style="flex: 1;" onclick="revealMath()">👀 Reveal</button>
+                <button class="btn" style="flex: 1; border-color: var(--primary); color: var(--primary);" onclick="generateMathChallenge()">🔄 Next</button>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="tool-title">🧠 Time-Locked Vocab</div>
+            <div class="vocab-nav">
+                <button class="vocab-nav-btn" id="vPrevBtn" onclick="changeVocab(-1)">⬅️ Prev</button>
+                <div class="vocab-counter" id="vCounter">1 / 500</div>
+                <button class="vocab-nav-btn" id="vNextBtn" onclick="changeVocab(1)">Next ➡️</button>
+            </div>
+            <div class="vocab-box">
+                <div class="vocab-word" id="vWord">Loading...</div>
+                <div class="vocab-meaning" id="vMeaning">...</div>
+                <div class="vocab-trick" id="vTrick">...</div>
+            </div>
+            <div class="vocab-timer" id="vocabTimerText">Next word in: --:--:--</div>
+        </div>
+
+        <div class="glass-card">
+            <div class="tool-title">📌 Quick Bookmarks</div>
+            <div class="resource-grid">
+                <a href="https://ssc.gov.in" target="_blank" class="resource-link">🏛️ SSC Official</a>
+                <a href="https://youtube.com" target="_blank" class="resource-link">📺 YouTube</a>
+                <a href="https://testbook.com" target="_blank" class="resource-link">🎯 Testbook</a>
+                <a href="https://drive.google.com" target="_blank" class="resource-link">📚 Drive Notes</a>
+            </div>
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-top: 15px;">One click access to platforms</div>
+        </div>
+    </div>
+
+    <div class="section-heading">⚙️ Nova Command Deck</div>
+    <div class="premium-grid">
+        
+        <div class="glass-card timer-card">
+            <div class="tool-title">⏱️ Focus Terminal</div>
+            <div class="timer-display" id="timerDisplay">25:00</div>
+            <div class="timer-controls">
+                <button class="btn btn-primary" onclick="startTimer()">▶ Start</button>
+                <button class="btn" onclick="pauseTimer()">⏸ Pause</button>
+            </div>
+            <div style="text-align:center;">
+                <button class="preset-btn active" onclick="setTimer(25, this)">25m</button>
+                <button class="preset-btn" onclick="setTimer(50, this)">50m</button>
+                <button class="preset-btn" onclick="setTimer(5, this)">5m</button>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="tool-title">🎧 Mind Waves</div>
+            <div class="audio-selector">
+                <button class="audio-btn active" onclick="changeMusic('5qap5aO4i9A', this)">☕ Lo-Fi</button>
+                <button class="audio-btn" onclick="changeMusic('eKFTSSKCzWA', this)">🍃 Fresh</button>
+                <button class="audio-btn" onclick="changeMusic('lFcSrYw-ARY', this)">🧘 Zen</button>
+                <button class="audio-btn" onclick="changeMusic('1ZYbU82GVz4', this)">🌌 432Hz</button>
+            </div>
+            <iframe id="musicFrame" class="music-player" src="https://www.youtube.com/embed/5qap5aO4i9A?controls=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+
+        <div class="glass-card">
+            <div class="tool-title">💧 Hydration (<span id="waterCountText">0</span>/8)</div>
+            <div class="water-container" id="waterContainer"></div>
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.9rem; font-weight: bold;">(Auto-Reminder: Every 60 Mins)</div>
+        </div>
+
+        <div class="glass-card">
+            <div class="tool-title">⏰ Routine Protocol</div>
+            <div class="alarm-inputs">
+                <input type="time" id="alarmTime" style="flex: 1;">
+                <input type="text" id="alarmSubj" placeholder="Subject" style="flex: 2;">
+            </div>
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;" onclick="addAlarm()">Add Alarm</button>
+            <div id="alarmList" style="max-height: 100px; overflow-y: auto;"></div>
+        </div>
+
+    </div>
+
+    <div class="section-heading">📚 Study Arsenal</div>
+    <div class="premium-grid" style="align-items: start;">
+        
+        <div class="glass-card subject-card">
+            <div class="tool-title">🧮 Maths & Speed</div>
+            <div id="mathsTasks"></div>
+        </div>
+
+        <div class="glass-card subject-card">
+            <div class="tool-title">📖 English</div>
+            <div id="englishTasks"></div>
+        </div>
+        
+        <div class="glass-card subject-card">
+            <div class="tool-title">🧠 Reasoning</div>
+            <div id="reasoningTasks"></div>
+        </div>
+        
+        <div class="glass-card subject-card">
+            <div class="tool-title">🌍 General Studies</div>
+            <div id="gsTasks"></div>
+        </div>
+
+        <div class="glass-card subject-card" style="grid-column: 1 / -1; max-width: 600px; margin: 0 auto; width: 100%;">
+            <div class="tool-title" style="color: var(--accent);">✨ Extra Quests</div>
+            <div class="add-task-container">
+                <input type="text" id="newTaskInput" class="task-input" placeholder="Type new custom quest...">
+                <button class="btn btn-primary" onclick="addNewTask()">Add</button>
+            </div>
+            <div id="customTaskList"></div>
+        </div>
+
+    </div>
+
+    <div class="glass-card notes-card">
+        <div class="tool-title" style="text-align: left; margin-bottom: 5px; color: var(--primary);">📓 Daily Reflection & Notes</div>
+        <div style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 10px;">Log your formulas, doubts, or summarize what you mastered today.</div>
+        <textarea class="notes-area" id="scratchpad" placeholder="Type here... (Everything is auto-saved locally)"></textarea>
+    </div>
+
+    <button class="btn" style="width: 100%; max-width: 1300px; border-color:var(--accent); color:var(--accent); margin-bottom: 40px; font-size: 1.1rem;" onclick="resetDay()">🔄 System Reset: Prepare for a New Day</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => { if ("Notification" in window && Notification.permission !== "denied") Notification.requestPermission(); });
+        function sendNotification(title, bodyText) { if ("Notification" in window && Notification.permission === "granted") new Notification(title, { body: bodyText }); }
+
+        let isDarkMode = localStorage.getItem('mockNovaDarkMode') === 'true';
+        function applyTheme() {
+            document.body.classList.toggle('dark-mode', isDarkMode);
+            document.getElementById('themeBtn').innerText = isDarkMode ? '☀️ 3D Light Mode' : '🌙 3D Dark Mode';
+        }
+        function toggleTheme() { isDarkMode = !isDarkMode; localStorage.setItem('mockNovaDarkMode', isDarkMode); applyTheme(); }
+        applyTheme();
+
+        let isZenMode = false;
+        function toggleZenMode() { isZenMode = !isZenMode; document.body.classList.toggle('zen-active', isZenMode); }
+
+        const options = { weekday: 'long', month: 'long', day: 'numeric' };
+        document.getElementById('currentDate').innerText = `📅 ${new Date().toLocaleDateString('en-IN', options)}`;
+
+        function updateCountdown() {
+            const targetDate = new Date("2026-05-07").getTime();
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+            let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            if(days < 0) days = 0;
+            document.getElementById('examCountdown').innerText = days;
+        }
+        updateCountdown();
+        setInterval(updateCountdown, 86400000); 
+
+        // --- NEW: NEURAL MATH BOOSTER LOGIC ---
+        function generateMathChallenge() {
+            const types = ['multiply', 'square', 'cube', 'percentage'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            let question = ''; let answer = '';
+            
+            if(type === 'multiply') {
+                let a = Math.floor(Math.random() * 15) + 11; // 11 to 25
+                let b = Math.floor(Math.random() * 15) + 11;
+                question = `${a} × ${b} = ?`;
+                answer = a * b;
+            } else if(type === 'square') {
+                let a = Math.floor(Math.random() * 30) + 11; // 11 to 40
+                question = `${a}² = ?`;
+                answer = a * a;
+            } else if(type === 'cube') {
+                let a = Math.floor(Math.random() * 15) + 6; // 6 to 20
+                question = `${a}³ = ?`;
+                answer = a * a * a;
+            } else if(type === 'percentage') {
+                let a = (Math.floor(Math.random() * 15) + 1) * 5; // 5%, 10%, 15%...
+                let b = (Math.floor(Math.random() * 20) + 5) * 10; // 50, 60...
+                question = `${a}% of ${b} = ?`;
+                answer = (a * b) / 100;
+            }
+            
+            document.getElementById('mathQuestion').innerText = question;
+            document.getElementById('mathAnswer').innerText = answer;
+            document.getElementById('mathAnswer').style.display = 'none';
+        }
+        function revealMath() {
+            document.getElementById('mathAnswer').style.display = 'block';
+        }
+        window.addEventListener('load', generateMathChallenge); // Load first challenge
+
+        const vocabBank = [
+            ["Abate", "Reduce/Decrease", "A + Bate (weight) -> reduce"],
+            ["Abdicate", "Give up power", "Ab (now) + dictate -> stop dictating"],
+            ["Aberration", "Abnormal", "Ab + error -> abnormal"],
+            ["Abhor", "Hate deeply", "Ab + whore -> hate"],
+            ["Abject", "Miserable", "Reject -> Abject"],
+            ["Abnegation", "Self-denial", "Ab + negate -> deny oneself"],
+            ["Abortive", "Unsuccessful", "Abort -> fail"],
+            ["Abridge", "Shorten", "A bridge shortens distance"],
+            ["Abrogate", "Cancel/Repeal", "Ab + rogate (cry) -> cancel"],
+            ["Abscond", "Flee secretly", "Absent in a second"],
+            ["Absolve", "Free from blame", "Solve the case -> free"],
+            ["Abstemious", "Moderate in eating", "Ab (away) + stem (stomach)"],
+            ["Abstruse", "Hard to understand", "Abstract math"],
+            ["Abysmal", "Extremely bad", "Abyss -> bottomless pit"],
+            ["Accolade", "Award/Praise", "A cool ad -> gets award"],
+            ["Acerbic", "Bitter/Sharp", "Acidic -> Acerbic"],
+            ["Acquiesce", "Agree silently", "Accept quietly"],
+            ["Acrimonious", "Bitter in tone", "A crime -> bitter fight"],
+            ["Acumen", "Sharp insight", "IQ + men"],
+            ["Adamant", "Stubborn", "A + dam -> unmovable"],
+            ["Admonish", "Warn firmly", "Add + punish -> warn"],
+            ["Adroit", "Skillful", "Android -> smart/skillful"],
+            ["Adulation", "Excessive praise", "Adult + flattery"],
+            ["Adulterate", "Make impure", "Adults ruin purity"],
+            ["Aesthetic", "About beauty", "Aesthetics -> looks"],
+            ["Affable", "Friendly", "Affectionable -> Affable"],
+            ["Affectation", "Fake behavior", "Acting fake"],
+            ["Affinity", "Natural liking", "Affection -> Affinity"],
+            ["Affluent", "Wealthy", "Fluid/Flowing money"],
+            ["Alacrity", "Eagerness/Speed", "Allah + creativity -> fast"],
+            ["Alienate", "Make unfriendly", "Treat like an alien"],
+            ["Alleviate", "Relieve pain", "All leave -> pain leaves"],
+            ["Aloof", "Distant/Unfriendly", "Alone on a roof"],
+            ["Altruism", "Selfless concern", "All + true -> good person"],
+            ["Amalgamate", "Combine", "Amalgam -> metal mix"],
+            ["Ambiguous", "Unclear", "Ambi (two) -> confusing"],
+            ["Ambivalent", "Mixed feelings", "Ambi (both) values"],
+            ["Ameliorate", "Improve", "Amul rate -> improves health"],
+            ["Amenable", "Agreeable", "Amen -> I agree"],
+            ["Amiable", "Friendly", "Amigo (friend)"],
+            ["Amnesty", "Official pardon", "I am nasty -> forgive me"],
+            ["Amorphous", "Shapeless", "A (no) + morph (shape)"],
+            ["Anachronism", "Out of correct time", "Ana + chrono (time)"],
+            ["Analogy", "Comparison", "Analogous -> similar"],
+            ["Anarchy", "No government", "A (no) + archy (rule)"],
+            ["Animosity", "Strong hatred", "Animal city -> fighting"],
+            ["Anomaly", "Irregularity", "Abnormal -> Anomaly"],
+            ["Antipathy", "Dislike", "Anti + pathy (feeling)"],
+            ["Apathy", "Lack of emotion", "A (no) + pathy (feeling)"],
+            ["Appease", "Pacify", "Please -> Appease"],
+            ["Banal", "Boring/Ordinary", "Ban all boring stuff"],
+            ["Bane", "Cause of ruin", "Bane (Batman villain)"],
+            ["Bastion", "Stronghold", "Base + station"],
+            ["Beleaguer", "Harass/Besiege", "Be in league -> surrounded"],
+            ["Belittle", "Put down", "Be + little -> make small"],
+            ["Bellicose", "Aggressive", "Belli (war) + glucose"],
+            ["Belligerent", "Hostile/Fighting", "Belli (war)"],
+            ["Benefactor", "Helper/Donor", "Bene (good) + factor"],
+            ["Benevolent", "Kind", "Bene (good) -> kind"],
+            ["Benign", "Harmless/Kind", "Be + nice"],
+            ["Blatant", "Very obvious", "Blah + tent -> openly shouting"],
+            ["Bucolic", "Rural/Country", "Bull + cow -> village"],
+            ["Burgeon", "Grow rapidly", "Burger + on -> grow fat"],
+            ["Cacophony", "Harsh sound", "Caco (bad) + phone"],
+            ["Cajole", "Persuade by flattery", "Kajol (actress) flatters"],
+            ["Callous", "Cruel/Insensitive", "Call + us -> never calls back"],
+            ["Calumny", "False slander", "Kaalu + money -> fake rumor"],
+            ["Capricious", "Unpredictable", "Cap price -> changes daily"],
+            ["Castigate", "Punish severely", "Cast + gate -> throw out"],
+            ["Catalyst", "Speeds up process", "Chemistry catalyst"],
+            ["Catharsis", "Emotional release", "Katha -> crying during story"],
+            ["Censure", "Harsh criticism", "Censor board cuts"],
+            ["Charlatan", "Fake expert", "Chaar + laate -> kick fraud"],
+            ["Chicanery", "Trickery", "Shikari -> tricking prey"],
+            ["Coerce", "Force someone", "Force -> Coerce"],
+            ["Cogent", "Logical/Convincing", "Co + agent -> smart agent"],
+            ["Collusion", "Secret plot", "Illusion -> fake/secret"],
+            ["Complacent", "Self-satisfied", "Come + place -> happy there"],
+            ["Conciliatory", "Making peace", "Council -> peace talks"],
+            ["Connoisseur", "Expert judge", "Kaun + sure -> expert is sure"],
+            ["Consensus", "General agreement", "Consent -> agree"],
+            ["Contentious", "Argumentative", "Contender -> argues"],
+            ["Copious", "Abundant", "Copies -> many copies"],
+            ["Corroborate", "Confirm", "Co + robot -> support each other"],
+            ["Craven", "Lacking courage", "Cave + in -> hiding in cave"],
+            ["Credulous", "Too ready to believe", "Credit -> gives credit easily"],
+            ["Crescendo", "Highest point of sound", "Crease + end -> top end"],
+            ["Cryptic", "Mysterious meaning", "Crypto -> hidden currency"],
+            ["Culmination", "Climactic point", "Climax -> peak"],
+            ["Culpable", "Deserving blame", "Culprit -> to be blamed"],
+            ["Cynical", "Self-interested belief", "Sin + call -> sees only sins"],
+            ["Daunt", "Intimidate/Scare", "Don -> scares people"],
+            ["Dearth", "Scarcity", "Earth -> lacks water"],
+            ["Debacle", "Huge failure", "Dabba empty -> fail"],
+            ["Decimate", "Destroy mostly", "Deci (10) -> destroy 1/10"],
+            ["Deleterious", "Harmful", "Delete -> harmful things"],
+            ["Demagogue", "Manipulative leader", "Demo (people) + god -> fake god"],
+            ["Deride", "Mock/Ridicule", "De + ride -> mock their car"],
+            ["Desiccate", "Dry out completely", "Desert + cake -> dry"],
+            ["Despot", "Dictator", "Cruel spot -> dictator"],
+            ["Didactic", "Teaching/Preachy", "Didi + act -> teacher acting"],
+            ["Diffident", "Shy/No confidence", "Difficult + confident"],
+            ["Dilettante", "Amateur", "Dil + tant -> fun only"],
+            ["Disparage", "Belittle", "Dis + praise -> insult"],
+            ["Disseminate", "Spread (info)", "Seminary -> spread seeds"],
+            ["Dogmatic", "Opinionated", "Dog -> stubborn"],
+            ["Ebullient", "Joyful/Energetic", "Bull -> full of energy"],
+            ["Eclectic", "From many sources", "Elect best of all"],
+            ["Egalitarian", "Believing in equality", "Equal -> Egalitarian"],
+            ["Egregious", "Extremely bad", "Egg + reach -> throw eggs"],
+            ["Elicit", "Bring out", "Exit -> draw out truth"],
+            ["Elusive", "Hard to catch", "Illusion -> elusive"],
+            ["Emulate", "Imitate/Copy", "Emu -> trying to fly like eagle"],
+            ["Enervate", "Weaken", "Energy + waste -> drain"],
+            ["Enigma", "Mystery", "Egg + mark -> mystery"],
+            ["Ephemeral", "Short-lived", "e-Femina -> beauty fades"],
+            ["Epitome", "Perfect example", "Epic + tome -> perfect summary"],
+            ["Equanimity", "Calmness", "Equal + mind -> calm"],
+            ["Erudite", "Scholarly", "Educated -> Erudite"],
+            ["Esoteric", "Understood by few", "Isolated secret"],
+            ["Exacerbate", "Make worse", "Extra + bad -> worse"],
+            ["Exonerate", "Free from blame", "Ex + honor -> get honor back"],
+            ["Extrapolate", "Predict from data", "Extra + plot -> predict future"],
+            ["Facetious", "Joking inappropriately", "Face -> making funny faces"],
+            ["Fallacy", "A mistaken belief", "False -> incorrect"],
+            ["Fastidious", "Very careful/Fussy", "Fast + tedious -> hard to please"],
+            ["Fatuous", "Silly/Foolish", "Fat + ass -> stupid"],
+            ["Foment", "Stir up/Instigate", "Foam -> stir up bubbles"],
+            ["Fortuitous", "Lucky accident", "Fortune -> luck"],
+            ["Frugal", "Thrifty/Cheap", "Free + girl -> saves money"],
+            ["Furtive", "Secretive", "Fur + thief -> sneaky cat"],
+            ["Garrulous", "Talkative", "Girls + rules -> talk a lot"],
+            ["Gregarious", "Sociable", "Group -> loves groups"],
+            ["Guile", "Cunning/Deceit", "Guilty mind -> smart trick"],
+            ["Hackneyed", "Overused/Cliche", "Hacked -> used too much"],
+            ["Hegemony", "Dominance", "Huge + money -> dominance"],
+            ["Iconoclast", "Attacker of beliefs", "Icon + clash -> breaks idols"],
+            ["Idiosyncrasy", "Peculiarity", "Idiot + crazy -> weird habit"],
+            ["Impeccable", "Flawless", "Pack -> perfect pack"],
+            ["Impetuous", "Impulsive/Rash", "Impatient -> rash action"],
+            ["Incessant", "Unceasing", "In + cease -> never stops"],
+            ["Incorrigible", "Incurable", "In + correct -> can't fix"],
+            ["Indefatigable", "Tireless", "In + defeat -> never gets tired"],
+            ["Indigenous", "Native", "India + gen -> native"],
+            ["Indolent", "Lazy", "In + dole -> won't move"],
+            ["Inexorable", "Relentless", "In + exhaust -> doesn't stop"],
+            ["Innocuous", "Harmless", "Innocent -> harmless"],
+            ["Insidious", "Sneaky/Treacherous", "Inside + hide -> hidden danger"],
+            ["Intractable", "Stubborn", "In + tractor -> won't move"],
+            ["Intransigent", "Uncompromising", "In + transit -> won't move"],
+            ["Inundate", "Flood/Overwhelm", "In + date -> flooded with dates"],
+            ["Irascible", "Easily angered", "Irrational + anger"],
+            ["Labyrinth", "Maze", "Lab -> confusing paths"],
+            ["Laconic", "Using few words", "Lack + words"],
+            ["Lampoon", "Satirize/Mock", "Baboon -> mock like monkey"],
+            ["Lethargy", "Sluggishness", "Let + energy -> let it go"],
+            ["Loquacious", "Talkative", "Loqua (talk) -> too much talk"],
+            ["Lucid", "Clear", "Lucid dreams -> clear"],
+            ["Magnanimous", "Generous", "Mega + animal -> big heart"],
+            ["Malinger", "Fake illness", "Mal (bad) + linger -> stay in bed"],
+            ["Malleable", "Easily shaped", "Melt + able -> can shape"],
+            ["Maverick", "Independent/Rebel", "Marvel -> unique hero"],
+            ["Mellifluous", "Sweet sounding", "Melody + flow -> sweet music"],
+            ["Mendacious", "Lying", "Men + dash -> run away after lying"],
+            ["Mercenary", "Hired for money", "Mercy + no -> kills for money"],
+            ["Mercurial", "Changing moods", "Mercury -> liquid metal shifts"],
+            ["Misanthropic", "Hating mankind", "Mis (hate) + anthro (human)"],
+            ["Mitigate", "Make less severe", "Mitti + gate -> softens impact"],
+            ["Mollify", "Soothe/Pacify", "Molly (soft) -> soften anger"],
+            ["Morose", "Gloomy/Sullen", "No rose -> sad face"],
+            ["Mundane", "Ordinary/Boring", "Monday -> boring day"],
+            ["Munificent", "Very generous", "Money + sufficient -> gives freely"],
+            ["Myriad", "Countless number", "Pyramid -> countless stones"],
+            ["Nefarious", "Extremely wicked", "No + fair -> very unfair/evil"],
+            ["Nepotism", "Favoring relatives", "Nephew -> favoring family"],
+            ["Obdurate", "Stubborn", "Ob + duration -> stubborn forever"],
+            ["Obfuscate", "Make confusing", "Confuse -> Obfuscate"],
+            ["Obsequious", "Kissing up", "Obey + yes -> says yes to all"],
+            ["Ostentatious", "Showing off", "Show + tent -> flashy tent"],
+            ["Panacea", "Cure-all", "Pan (all) + cure"],
+            ["Paradigm", "Model/Example", "Para + diagram -> perfect model"],
+            ["Parochial", "Narrow-minded", "Parachute -> blocked vision"],
+            ["Paucity", "Scarcity", "Paav (little) + city -> very little"],
+            ["Pedantic", "Boringly scholarly", "Pendant -> showing off knowledge"],
+            ["Pejorative", "Negative/Insulting", "Pee + jar -> insulting act"],
+            ["Penchant", "Strong liking", "Pen + chant -> loves chanting"],
+            ["Perfunctory", "Careless/Routine", "Perform + factory -> machine-like"],
+            ["Pernicious", "Deadly/Evil", "Pain + vicious -> very harmful"],
+            ["Petulant", "Rude/Cranky", "Pet -> acting like cranky dog"],
+            ["Philanthropy", "Love of mankind", "Phil (love) + anthro (human)"],
+            ["Placate", "Pacify", "Plate -> give food to calm"],
+            ["Plethora", "Abundance", "Plenty -> Plethora"],
+            ["Polemic", "Powerful argument", "Pol + mic -> heated debate"],
+            ["Pragmatic", "Practical", "Practical -> Pragmatic"],
+            ["Precipitate", "Cause to happen fast", "Pre + speed -> accelerate"],
+            ["Preclude", "Prevent", "Pre + close -> close door early"],
+            ["Predilection", "Preference", "Pre + direction -> leaning towards"],
+            ["Prolific", "Very productive", "Pro + lift -> lifting output"],
+            ["Propensity", "Natural inclination", "Pro + pen -> naturally likes writing"],
+            ["Prosaic", "Dull/Unimaginative", "Prose -> plain text"],
+            ["Provincial", "Narrow-minded", "Province -> village thinking"],
+            ["Prudent", "Careful/Wise", "President -> must be wise"],
+            ["Querulous", "Complaining", "Query -> complaining"],
+            ["Quixotic", "Impractical/Romantic", "Quick + exotic -> fantasy"],
+            ["Rancor", "Bitter resentment", "Rank -> angry about low rank"],
+            ["Rebut", "Contradict", "But -> arguing back"],
+            ["Recalcitrant", "Stubborn", "Re + call -> won't come"],
+            ["Recondite", "Hard to understand", "Re + conduct -> hard to process"],
+            ["Redundant", "Repetitive", "Re + done -> done again"],
+            ["Refute", "Prove false", "Refuse -> prove wrong"],
+            ["Relegate", "Demote", "Re + leg -> sent to the bottom"],
+            ["Relinquish", "Give up", "Re + link -> break link"],
+            ["Reprehensible", "Worthy of blame", "Prehend -> catch bad guy"],
+            ["Repudiate", "Reject/Deny", "Re + put -> push away"],
+            ["Reticent", "Quiet/Silent", "Rest + cent -> keeping quiet"],
+            ["Revere", "Respect highly", "Reverend -> respected"],
+            ["Rhetoric", "Art of speaking", "Right + oral -> speaking well"],
+            ["Sagacious", "Wise", "Sage -> wise monk"],
+            ["Salient", "Standing out", "Silent -> important things stand out"],
+            ["Sanguine", "Optimistic", "Sang -> singing happily"],
+            ["Sardonic", "Mocking", "Sardine -> salty and mocking"],
+            ["Scrupulous", "Careful/Honest", "Screw + pull -> careful work"],
+            ["Sycophant", "Flatterer", "Psycho + fan -> kissing up"],
+            ["Taciturn", "Untalkative", "Turn + silent -> doesn't speak"],
+            ["Tangible", "Touchable/Real", "Tangle -> can hold it"],
+            ["Tantamount", "Equivalent to", "Equal amount"],
+            ["Temerity", "Boldness/Rashness", "Team + merit -> overconfident"],
+            ["Tenacious", "Persistent", "Ten + ants -> holding tightly"],
+            ["Trepidation", "Fear", "Trap + nation -> fear of trap"],
+            ["Ubiquitous", "Everywhere", "U + big + mosquito -> everywhere"],
+            ["Urbane", "Refined/Polite", "Urban -> city manners"],
+            ["Vacillate", "Waver", "Oscillate -> swinging"],
+            ["Venerate", "Respect deeply", "Venerable"],
+            ["Veracity", "Truthfulness", "Verify"],
+            ["Verbose", "Wordy", "Verbs -> many words"],
+            ["Vindicate", "Clear of blame", "Win + case -> proven innocent"],
+            ["Virtuoso", "Master/Expert", "Virtue -> great skill"],
+            ["Vitriolic", "Bitter/Caustic", "Acidic -> bitter words"],
+            ["Vociferous", "Loud/Noisy", "Voice + furious -> shouting"],
+            ["Volatile", "Unstable", "Volcano -> erupts easily"],
+            ["Zealous", "Enthusiastic", "Jealous -> passionate"]
+        ];
+
+        let vocabStartTime = parseInt(localStorage.getItem('mockNovaVocabStart'));
+        if(!vocabStartTime) {
+            vocabStartTime = Date.now();
+            localStorage.setItem('mockNovaVocabStart', vocabStartTime);
+        }
+
+        let maxUnlockedIndex = 0;
+        let currentViewIndex = 0;
+
+        function updateVocabSystem() {
+            const msPassed = Date.now() - vocabStartTime;
+            const hoursPassed = Math.floor(msPassed / (1000 * 60 * 60));
+            maxUnlockedIndex = Math.floor(hoursPassed / 2);
+            
+            if(maxUnlockedIndex >= vocabBank.length) maxUnlockedIndex = vocabBank.length - 1;
+            if(currentViewIndex > maxUnlockedIndex) currentViewIndex = maxUnlockedIndex;
+
+            renderVocabUI();
+            updateVocabTimer();
+        }
+
+        function renderVocabUI() {
+            const wordData = vocabBank[currentViewIndex];
+            document.getElementById('vWord').innerText = wordData[0];
+            document.getElementById('vMeaning').innerText = wordData[1];
+            document.getElementById('vTrick').innerText = "Nova Link: " + wordData[2];
+            
+            document.getElementById('vCounter').innerText = `${currentViewIndex + 1} / ${vocabBank.length}`;
+            
+            document.getElementById('vPrevBtn').className = currentViewIndex === 0 ? "vocab-nav-btn btn-disabled" : "vocab-nav-btn";
+            document.getElementById('vNextBtn').className = currentViewIndex === maxUnlockedIndex ? "vocab-nav-btn btn-disabled" : "vocab-nav-btn";
+        }
+
+        function changeVocab(direction) {
+            let newIndex = currentViewIndex + direction;
+            if(newIndex >= 0 && newIndex <= maxUnlockedIndex) {
+                currentViewIndex = newIndex;
+                renderVocabUI();
+            } else if (newIndex > maxUnlockedIndex && maxUnlockedIndex < vocabBank.length - 1) {
+                alert("Next word is still locked! Wait for the timer.");
+            }
+        }
+
+        function updateVocabTimer() {
+            if(maxUnlockedIndex >= vocabBank.length - 1) {
+                document.getElementById('vocabTimerText').innerText = "All words unlocked!";
+                return;
+            }
+            const nextUnlockTime = vocabStartTime + ((maxUnlockedIndex + 1) * 2 * 60 * 60 * 1000);
+            const timeLeft = nextUnlockTime - Date.now();
+            
+            let h = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let m = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            let s = Math.floor((timeLeft % (1000 * 60)) / 1000);
+            
+            h = h < 10 ? '0' + h : h; m = m < 10 ? '0' + m : m; s = s < 10 ? '0' + s : s;
+            
+            document.getElementById('vocabTimerText').innerText = `Next word in: ${h}:${m}:${s}`;
+        }
+        
+        setInterval(() => {
+            updateVocabTimer();
+            const msPassed = Date.now() - vocabStartTime;
+            const newMax = Math.floor(Math.floor(msPassed / (1000 * 60 * 60)) / 2);
+            if(newMax > maxUnlockedIndex && newMax < vocabBank.length) {
+                maxUnlockedIndex = newMax;
+                currentViewIndex = maxUnlockedIndex; 
+                renderVocabUI();
+                sendNotification("📖 New Word Unlocked!", `Your new vocab word is ready: ${vocabBank[maxUnlockedIndex][0]}`);
+            }
+        }, 1000);
+
+        updateVocabSystem(); 
+
+        const defaultTasks = {
+            maths: ["Calculation Practice (15m)", "Arithmetic Revision", "Advanced Math Concepts", "Sectional Mock Test"],
+            english: ["Vocab & Root Words (40)", "Grammar Rules Revision", "Reading Comprehension", "Error Spotting Quiz"],
+            reasoning: ["Number Series Practice", "Coding-Decoding Quiz", "Puzzles & Seating", "Previous Year Sectional"],
+            gs: ["Current Affairs (Daily)", "History/Polity Revision", "Science (Bio/Physics)", "Static GK & Maps"]
+        };
+
+        let xp = parseInt(localStorage.getItem('mockNovaXP')) || 0;
+
+        function renderTasks() {
+            const savedData = JSON.parse(localStorage.getItem('mockNovaStandardDataV3')) || defaultTasks;
+            ['maths', 'english', 'reasoning', 'gs'].forEach(cat => {
+                const box = document.getElementById(`${cat}Tasks`); box.innerHTML = '';
+                if(savedData[cat]) {
+                    savedData[cat].forEach(t => {
+                        let text = typeof t === 'string' ? t : t.text; let checked = typeof t === 'string' ? false : t.checked;
+                        box.innerHTML += `
+                            <div class="task-item ${checked ? 'checked':''}">
+                                <input type="checkbox" class="std-check" data-cat="${cat}" ${checked ? 'checked':''} onchange="handleTaskChange(this)">
+                                <span contenteditable="true" class="task-text std-text" data-cat="${cat}">${text}</span>
+                            </div>`;
+                    });
+                }
+            });
+            attachTextListeners();
+        }
+
+        function attachTextListeners() {
+            document.querySelectorAll('.task-text').forEach(span => {
+                span.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); this.blur(); }});
+                span.addEventListener('blur', saveAllData);
+            });
+        }
+
+        const customBox = document.getElementById('customTaskList');
+        document.getElementById('newTaskInput').addEventListener('keypress', function (e) { if (e.key === 'Enter') addNewTask(); });
+
+        function addNewTask() {
+            const text = document.getElementById('newTaskInput').value.trim(); if (!text) return;
+            customBox.innerHTML += `
+                <div class="task-item cust-wrap">
+                    <input type="checkbox" class="cust-check" onchange="handleTaskChange(this)">
+                    <span contenteditable="true" class="task-text cust-text">${text}</span>
+                    <button class="delete-btn" onclick="this.parentElement.remove(); handleTaskChange();">✖</button>
+                </div>`;
+            document.getElementById('newTaskInput').value = "";
+            attachTextListeners(); handleTaskChange();
+        }
+
+        function loadCustomTasks() {
+            const saved = JSON.parse(localStorage.getItem('mockNovaCustomData')) || [];
+            saved.forEach(t => {
+                customBox.innerHTML += `
+                <div class="task-item cust-wrap ${t.checked ? 'checked':''}">
+                    <input type="checkbox" class="cust-check" ${t.checked ? 'checked':''} onchange="handleTaskChange(this)">
+                    <span contenteditable="true" class="task-text cust-text">${t.text}</span>
+                    <button class="delete-btn" onclick="this.parentElement.remove(); handleTaskChange();">✖</button>
+                </div>`;
+            });
+            attachTextListeners();
+        }
+
+        function saveAllData() {
+            const stdData = { maths: [], english: [], reasoning: [], gs: [] };
+            ['maths', 'english', 'reasoning', 'gs'].forEach(cat => {
+                document.querySelectorAll(`.std-text[data-cat="${cat}"]`).forEach(item => {
+                    stdData[cat].push({ text: item.innerText, checked: item.previousElementSibling.checked });
+                });
+            });
+            localStorage.setItem('mockNovaStandardDataV3', JSON.stringify(stdData));
+
+            const custData = [];
+            document.querySelectorAll('.cust-wrap').forEach(w => {
+                custData.push({ text: w.querySelector('.cust-text').innerText, checked: w.querySelector('.cust-check').checked });
+            });
+            localStorage.setItem('mockNovaCustomData', JSON.stringify(custData));
+        }
+
+        function handleTaskChange(cbElement) {
+            if(cbElement) { if(cbElement.checked) cbElement.parentElement.classList.add('checked'); else cbElement.parentElement.classList.remove('checked'); }
+            saveAllData(); updateProgress();
+            const checkedBoxes = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            xp = checkedBoxes * 10;
+            localStorage.setItem('mockNovaXP', xp);
+            document.getElementById('levelDisplay').innerText = `⭐ XP: ${xp}`;
+        }
+
+        function updateProgress() {
+            const allBoxes = document.querySelectorAll('input[type="checkbox"]');
+            const total = allBoxes.length; const completed = Array.from(allBoxes).filter(cb => cb.checked).length;
+            const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+            
+            const fill = document.getElementById('progressFill'); const text = document.getElementById('progressText');
+            fill.style.width = percent + '%';
+            
+            if(percent === 100 && total > 0) {
+                fill.style.background = 'linear-gradient(90deg, #00BFA5, #1DE9B6)';
+                text.innerText = `🔥 100% Completed! Outstanding! (${completed}/${total})`; text.style.color = 'var(--success)';
+                updateStreak();
+            } else {
+                fill.style.background = 'linear-gradient(90deg, var(--primary), var(--secondary))';
+                text.innerText = `${percent}% Completed (${completed}/${total} tasks)`; text.style.color = 'var(--text-main)';
+            }
+        }
+
+        function updateStreak() {
+            let today = new Date().toDateString(); let lastDone = localStorage.getItem('mockNovaLastDone');
+            let streak = parseInt(localStorage.getItem('mockNovaStreak')) || 0;
+            if (lastDone !== today) { streak++; localStorage.setItem('mockNovaStreak', streak); localStorage.setItem('mockNovaLastDone', today); document.getElementById('streakDisplay').innerText = `🔥 Streak: ${streak}`; }
+        }
+
+        function changeMusic(videoId, btn) {
+            document.getElementById('musicFrame').src = `https://www.youtube.com/embed/${videoId}?controls=0&autoplay=1`;
+            document.querySelectorAll('.audio-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
+        }
+
+        let timer, timeLeft = 1500, isRunning = false;
+        function updateTimerDisplay() {
+            let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+            m = m < 10 ? '0' + m : m; s = s < 10 ? '0' + s : s;
+            document.getElementById('timerDisplay').innerText = `${m}:${s}`;
+        }
+        function setTimer(mins, btn) { clearInterval(timer); isRunning = false; timeLeft = mins * 60; updateTimerDisplay(); document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+        function startTimer() { 
+            if (!isRunning && timeLeft > 0) { 
+                isRunning = true; 
+                timer = setInterval(() => { 
+                    timeLeft--; updateTimerDisplay(); 
+                    if (timeLeft <= 0) { clearInterval(timer); isRunning = false; sendNotification("🎯 Focus Completed!", "Great job! Time to take a small break."); } 
+                }, 1000); 
+            } 
+        }
+        function pauseTimer() { clearInterval(timer); isRunning = false; }
+
+        let waterCount = parseInt(localStorage.getItem('mockNovaWater')) || 0;
+        function renderWater() {
+            const wc = document.getElementById('waterContainer'); wc.innerHTML = ''; document.getElementById('waterCountText').innerText = waterCount;
+            for(let i=1; i<=8; i++) {
+                let div = document.createElement('div'); div.className = `water-drop ${i <= waterCount ? 'active' : ''}`; div.innerText = '💧';
+                div.onclick = () => { waterCount = (waterCount === i) ? i-1 : i; localStorage.setItem('mockNovaWater', waterCount); renderWater(); };
+                wc.appendChild(div);
+            }
+        }
+        setInterval(() => { sendNotification("💧 Hydration Time!", "Drink a glass of water and log it in MockNova."); }, 3600000);
+
+        let alarms = JSON.parse(localStorage.getItem('mockNovaAlarms')) || [];
+        function renderAlarms() {
+            const list = document.getElementById('alarmList'); list.innerHTML = '';
+            alarms.forEach((al, index) => { list.innerHTML += `<div class="alarm-item"><span>🔔 <b>${al.time}</b> - ${al.subj}</span><button class="btn" style="padding:4px 10px; border:none; color:var(--accent);" onclick="deleteAlarm(${index})">✖</button></div>`; });
+        }
+        function addAlarm() { 
+            let time = document.getElementById('alarmTime').value, subj = document.getElementById('alarmSubj').value.trim(); 
+            if(time && subj) { alarms.push({time, subj}); localStorage.setItem('mockNovaAlarms', JSON.stringify(alarms)); renderAlarms(); sendNotification("✅ Routine Set", `You will be reminded for ${subj} at ${time}.`); } 
+        }
+        function deleteAlarm(index) { alarms.splice(index, 1); localStorage.setItem('mockNovaAlarms', JSON.stringify(alarms)); renderAlarms(); }
+        
+        setInterval(() => { 
+            let now = new Date(); let currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`; 
+            alarms.forEach(al => { if(al.time === currentTime && now.getSeconds() < 2) sendNotification(`⏰ Routine Alert!`, `It's time for your scheduled session: ${al.subj}`); }); 
+        }, 1000);
+
+        function resetDay() {
+            if(confirm("Do you want to reset all tasks and hydration for a new day? (Notes will be saved)")) {
+                document.querySelectorAll('.std-check, .cust-check').forEach(cb => { cb.checked = false; cb.parentElement.classList.remove('checked'); });
+                waterCount = 0; localStorage.setItem('mockNovaWater', 0); renderWater();
+                document.querySelectorAll('.cust-wrap').forEach(el => el.remove());
+                setTimer(25, document.querySelectorAll('.preset-btn')[0]);
+                handleTaskChange();
+            }
+        }
+
+        const scratchpad = document.getElementById('scratchpad');
+        scratchpad.value = localStorage.getItem('mockNovaNotes') || '';
+        scratchpad.addEventListener('input', () => localStorage.setItem('mockNovaNotes', scratchpad.value));
+
+        window.onload = () => { 
+            renderTasks(); loadCustomTasks(); handleTaskChange(); renderWater(); renderAlarms(); currentViewIndex = maxUnlockedIndex; renderVocabUI();
+            document.getElementById('streakDisplay').innerText = `🔥 Streak: ${localStorage.getItem('mockNovaStreak') || 0}`;
+        };
+    </script>
+</body>
+</html>
